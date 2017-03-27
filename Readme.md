@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Анна Белан](https://up.htmlacademy.ru/javascript/9/user/196107).
-* Наставник: `Неизвестно`.
+* Наставник: `Ренат Туктаров`.
 
 ---
 
