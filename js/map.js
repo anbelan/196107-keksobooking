@@ -56,18 +56,36 @@ for (var i = 0; i < 8; i++) {
 	ad.push(generateObject(avatarNumbers[i], offerTitles[i]))
 }
 console.log(ad);
+
+function getTemplate(templateId) { 
+  return document.getElementById(templateId).innerHTML 
+}
+
+function substituteTemplate(template, data) {
+	var keys = Object.keys(data);
+	for(var i = 0; i < keys.length; i++) {
+		var attribute = data[keys[i]];
+		var innerKeys = Object.keys(attribute);
+		for(var j = 0; j < innerKeys.length; j++) {
+			var value = attribute[innerKeys[j]];
+			var placeholder = '{{' + keys[i] + '.' + innerKeys[j] + '}}';
+			template = template.split(placeholder).join(value);
+		}
+	}
+	return template;
+}
+
+
 // задание 2, 3
-var pin = [];
 var marker = document.querySelector('.tokyo__pin-map');
 var fragment = document.createDocumentFragment();
 for (var i = 0; i < 8; i++) {
-	var markerPin = document.createElement('div');
-	markerPin.className = 'pin';
-	markerPin.setAttribute ('style', 'left:' + (ad[i].location.x - 56 / 2) + 'px; top:' + (ad[i].location.y - 75) + 'px');
-	markerPin.innerHTML = '<img src="' + ad[i].author.avatar + '" class="rounded" width="40" height="40">';
-	marker.appendChild(markerPin);
-	fragment.appendChild(markerPin);
-	pin.push(fragment)
+	var markerPin = substituteTemplate(getTemplate('marker.template'), ad[i]);
+	var div = document.createElement('div');
+	div.innerHTML = markerPin;
+	var elements = div.childNodes;
+	console.log(elements);
+	fragment.appendChild(elements[1]);
 }
 
 marker.appendChild(fragment);
