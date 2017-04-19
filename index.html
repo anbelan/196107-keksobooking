@@ -269,7 +269,7 @@
   </div>
 </template>
 <script defer type="text/template" id="marker.template">
-  <div class="pin" style="left: {{location.x}}px; top: {{location.y}}px">
+  <div class="pin" style="left: {{location.x}}px; top: {{location.y}}px" data-add-number="{{data.number}}" tabindex="{{data.number}}">
     <img src="{{author.avatar}}" class="rounded" width="40" height="40">
   </div>
 </script>

@@ -79,39 +79,104 @@ function substituteTemplate(template, data) {
 // задание 2, 3
 var marker = document.querySelector('.tokyo__pin-map');
 var fragment = document.createDocumentFragment();
+
 for (var i = 0; i < 8; i++) {
+	ad[i].data = {
+		number: i
+	};
 	var markerPin = substituteTemplate(getTemplate('marker.template'), ad[i]);
 	var div = document.createElement('div');
 	div.innerHTML = markerPin;
 	var elements = div.childNodes;
-	console.log(elements);
+	console.log(elements[1]);
 	fragment.appendChild(elements[1]);
 }
 
 marker.appendChild(fragment);
 
+function getTemplate(templateId) { 
+  return document.getElementById(templateId).innerHTML 
+}
+
+// function substituteTemplate(template, data) { ... }
+
 // задание 4
 
 var dialog = document.querySelector('#offer-dialog');
-
-var dialogPanel = document.querySelector('.dialog__panel');
 var lodgeTemplate = document.querySelector('#lodge-template').content;
 
-var dialogPanelElements = lodgeTemplate.cloneNode(true);	
-dialogPanelElements.querySelector('.lodge__title').textContent = ad[0].offer.title;
-dialogPanelElements.querySelector('.lodge__address').textContent = ad[0].offer.address;
-dialogPanelElements.querySelector('.lodge__price').innerHTML = ad[0].offer.price + '&#x20bd;/ночь';
-dialogPanelElements.querySelector('.lodge__type').textContent = {'flat': 'Квартира', 'bungalo': 'Бунгало', 'house': 'Дом'}[ad[0].offer.type]; 
-dialogPanelElements.querySelector('.lodge__rooms-and-guests').textContent = 'Для ' + ad[0].offer.guests + ' гостей в ' + ad[0].offer.rooms + ' комнатах';
-dialogPanelElements.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + ad[0].offer.checkin + ', выезд до ' + ad[0].offer.checkout;
-var features = '';
-for (var i = 0; i < ad[i].offer.features.length; i++) {
-	features = features + '<span class = "feature__image feature__image--' + ad[0].offer.features[i] + '"></span>';
+function fillDialog(advertisment) {
+	var dialogPanelElements = lodgeTemplate.cloneNode(true);	
+	var dialogPanel = document.querySelector('.dialog__panel');
+	dialogPanelElements.querySelector('.lodge__title').textContent = advertisment.offer.title;
+	dialogPanelElements.querySelector('.lodge__address').textContent = advertisment.offer.address;
+	dialogPanelElements.querySelector('.lodge__price').innerHTML = advertisment.offer.price + '&#x20bd;/ночь';
+	dialogPanelElements.querySelector('.lodge__type').textContent = {'flat': 'Квартира', 'bungalo': 'Бунгало', 'house': 'Дом'}[advertisment.offer.type]; 
+	dialogPanelElements.querySelector('.lodge__rooms-and-guests').textContent = 'Для ' + advertisment.offer.guests + ' гостей в ' + advertisment.offer.rooms + ' комнатах';
+	dialogPanelElements.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + advertisment.offer.checkin + ', выезд до ' + advertisment.offer.checkout;
+	var features = '';
+	for (var i = 0; i < ad[i].offer.features.length; i++) {
+		features = features + '<span class = "feature__image feature__image--' + advertisment.offer.features[i] + '"></span>';
+	}
+	dialogPanelElements.querySelector('.lodge__features').innerHTML = features;
+			
+	dialogPanelElements.querySelector('.lodge__description').textContent = advertisment.offer.description;
+
+	document.querySelector('.dialog__title').children[0].setAttribute('src', advertisment.author.avatar);
+
+	dialog.replaceChild(dialogPanelElements, dialogPanel);
+	document.getElementById('offer-dialog').style.display = 'block';
 }
-dialogPanelElements.querySelector('.lodge__features').innerHTML = features;
-		
-dialogPanelElements.querySelector('.lodge__description').textContent = ad[0].offer.description;
 
-document.querySelector('.dialog__title').children[0].setAttribute('src', ad[0].author.avatar);
+fillDialog(ad[0]);
 
-dialog.replaceChild(dialogPanelElements, dialogPanel);
+// Задние #11
+
+function deactivatePins(except) {
+	var pinsActive = document.getElementsByClassName('pin--active');
+		for(var j = 0; j < pinsActive.length; j++) {
+			if(except != pinsActive[j]) {
+				pinsActive[j].classList.remove('pin--active');
+			}
+		}
+}
+
+function makePinActive(pin) {
+	deactivatePins(pin);
+	pin.classList.add('pin--active');
+}
+
+function closeDialog() {
+	document.getElementById('offer-dialog').style.display = 'none';
+	deactivatePins(null);
+}
+
+var pins = document.getElementsByClassName('pin');
+for(var i = 0; i < pins.length; i++) {
+	var pin = pins[i];
+	pin.addEventListener('click', function() {
+		makePinActive(this);
+		fillDialog(ad[this.dataset.addNumber]);
+	});
+	pin.addEventListener('focus', function() {
+		makePinActive(this);
+	});
+	pin.addEventListener('keydown', function(evt) {
+  		if (evt.keyCode === 13) {
+    	fillDialog(ad[this.dataset.addNumber]);
+  		} else if(evt.keyCode === 27) {
+  			closeDialog();
+  		}
+	});
+}
+
+var dialogClose = document.querySelector('.dialog__close');
+dialogClose.onclick = function() {
+      closeDialog();
+      return false;
+    }
+dialogClose.addEventListener('keydown', function(evt) {
+  		if (evt.keyCode === 13) {
+  			closeDialog();
+  		}
+});
