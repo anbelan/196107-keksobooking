@@ -219,6 +219,18 @@ window.form = (function () {
     return null;
   }
 
+  function setValue(control, value) {
+    if (control.tagName == 'INPUT') {
+      control.value = value;
+    } else if (control.tagName == 'SELECT') {
+      for (var i = 0; i < control.options.length; i++) {
+        if (control.options[i].value == value) {
+          control.selectedIndex = i;
+          break;
+        }
+      }
+    }
+  }
 
   class FormValidator {
     constructor(formID) {
@@ -244,20 +256,7 @@ window.form = (function () {
       var keys = Object.keys(values);
       for (let controlId of keys) {
         var control = document.getElementById(controlId);
-        if (control) this.setValue(control, values[controlId]);
-      }
-    }
-
-    setValue(control, value) {
-      if (control.tagName == 'INPUT') {
-        control.value = value;
-      } else if (control.tagName == 'SELECT') {
-        for (var i = 0; i < control.options.length; i++) {
-          if (control.options[i].value == value) {
-            control.selectedIndex = i;
-            break;
-          }
-        }
+        if (control) setValue(control, values[controlId]);
       }
     }
 
@@ -313,10 +312,8 @@ window.form = (function () {
       return this.validatedContol;
     }
 
-    setDefaultCheckers() {
-      var checkers = []
-      for (var i = 0; i < arguments.length; i++) checkers.push(arguments[i]);
-      this.setCheckers(checkers);
+    setDefaultCheckers(...args) {
+      this.setCheckers(args);
       return this;
     }
 
@@ -326,7 +323,7 @@ window.form = (function () {
 
     isValid() {
       var value = getValue(this.getValidatedControl());
-      for (var i = 0; i < this.checkers.length; i++) {
+      for (let i = 0; i < this.checkers.length; i++) {
         if (this.checkers[i](value) == false) {
           return false;
         }
@@ -341,22 +338,6 @@ window.form = (function () {
         var checkers = getCheckersByValue(getValue(domElement));
         that.setCheckers(checkers);
       })
-    }
-  }
-
-  function submitGuard(formID) {
-    var formValidator = new FormValidator();
-    formValidator.submitGuard(formID);
-    return formValidator;
-  }
-
-  var titleChecker = function (userInput) {
-    return false;
-  }
-
-  function lengthChecker(length) {
-    return function (userInput) {
-      return true;
     }
   }
 
@@ -423,40 +404,71 @@ window.form = (function () {
 // время заезда время выезда
 
 // 1
-  var timeControl = document.getElementById('time');
-  var timeoutControl = document.getElementById('timeout');
-  timeControl.addEventListener('change', function () {
-    timeoutControl.selectedIndex = timeControl.selectedIndex;
-  });
-
-  var roomControl = document.getElementById('room_number');
-  var capacityControl = document.getElementById('capacity');
-
-// 2
-  var typeControl = document.getElementById('type');
-  var priceControl = document.getElementById('price');
-  typeControl.addEventListener('change', function () {
-    var value = typeControl.options[typeControl.selectedIndex].value;
-    var price = parseFloat(priceControl.value);
-    var minPrices = {
-      'Квартира': 1000,
-      'Лачуга': 0,
-      'Дворец': 10000
+  class FieldCorrection{
+    constructor(controlId){
+      this.controlId = controlId;
+      this.watchedControls = {};
     }
-    console.log(value, priceControl.value, minPrices[value]);
-    if (minPrices.hasOwnProperty(value)) {
-      if (price < minPrices[value]) {
-        priceControl.value = minPrices[value];
+    changeOn(controlId, setNewValueBy){
+      this.watchedControls[controlId] = setNewValueBy;
+      return this;
+    }
+    ready(){
+      this.watchedField = document.getElementById(this.controlId);
+      var that = this;
+      for(let controlId of Object.keys(this.watchedControls)) {
+        var control = document.getElementById(controlId);
+        document.getElementById(controlId).addEventListener('change', function() {
+          var newValue = that.watchedControls[controlId](getValue(control), getValue(that));
+          if(newValue === null) return;  // do not change
+          setValue(that.watchedField, newValue)
+        });
       }
     }
-  })
+  }
 
-// 3
-  roomControl.addEventListener('change', function () {
-    if (roomControl.options[roomControl.selectedIndex].value == '1 комната') {
-      capacityControl.selectedIndex = 1;
-    } else {
-      capacityControl.selectedIndex = 0;
-    }
-  })
+  let timeoutCorrection = new FieldCorrection('timeout');
+  timeoutCorrection
+    .changeOn('time', function(value){
+      switch(value){
+        case 'После 12':
+          return 'Выезд до 12';
+        case 'После 13':
+          return 'Выезд до 13';
+        case 'После 14':
+          return 'Выезд до 14';
+      }
+      return null;
+    })
+    .ready();
+
+  let priceCorrection = new FieldCorrection('price');
+  priceCorrection
+    .changeOn('type', function(value, currentValue){
+      var currentPrice = parseFloat(currentValue);
+      var minPrices = {
+        'Квартира': 1000,
+        'Лачуга': 0,
+        'Дворец': 10000
+      }
+      if (minPrices.hasOwnProperty(value)) {
+        if(currentPrice < minPrices[value]){
+          return minPrices[value];
+        }
+      }
+      return null;
+    })
+    .ready();
+
+  let capacityCorrection = new FieldCorrection('capacity');
+  capacityCorrection
+    .changeOn('room_number', function(value){
+      if (value === '1 комната') {
+        return 'не для гостей';
+      } else {
+        return 'для 3 гостей';
+      }
+    })
+    .ready();
+
 })();
