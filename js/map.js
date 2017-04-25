@@ -57,7 +57,6 @@ window.data = (function () {
   for (var i = 0; i < 8; i++) {
     ad.push(generateObject(avatarNumbers[i], offerTitles[i]))
   }
-  console.log(ad);
 
   function getTemplate(templateId) {
     return document.getElementById(templateId).innerHTML
@@ -90,6 +89,10 @@ window.map = (function () {
     var marker = document.querySelector('.tokyo__pin-map');
     var fragment = document.createDocumentFragment();
 
+    window.getTemplate = function getTemplate(templateId) {
+      return document.getElementById(templateId).innerHTML
+    }
+
     for (var i = 0; i < 8; i++) {
       ad[i].data = {
         number: i
@@ -98,17 +101,11 @@ window.map = (function () {
       var div = document.createElement('div');
       div.innerHTML = markerPin;
       var elements = div.childNodes;
-      console.log(elements[1]);
       fragment.appendChild(elements[1]);
     }
 
     marker.appendChild(fragment);
 
-    // pin.js?
-
-    function getTemplate(templateId) {
-      return document.getElementById(templateId).innerHTML
-    }
 
   })();
 
@@ -173,6 +170,7 @@ window.map = (function () {
     for (var i = 0; i < pins.length; i++) {
       var pin = pins[i];
       pin.addEventListener('click', function () {
+        if (!this.dataset.addNumber) return;
         makePinActive(this);
         fillDialog(ad[this.dataset.addNumber]);
       });
@@ -200,6 +198,75 @@ window.map = (function () {
     });
 
   })();
+
+  var pinElement = document.querySelector('.tokyo__pin-map');
+  var draggedItem = null;
+
+  pinElement.addEventListener('dragstart', function (evt) {
+    if (evt.target.tagName.toLowerCase() === 'img')
+      draggedItem = evt.target;
+    evt.dataTransfer.setData('text/plain', evt.target.alt);
+  });
+  var tokyoMapElement = document.querySelector('.tokyo');
+  tokyoMapElement.addEventListener('dragover', function (evt) {
+    evt.preventDefault();
+    return false;
+  });
+  tokyoMapElement.addEventListener('drop', function (evt) {
+    evt.target.appendChild(draggedItem);
+  });
+  tokyoMapElement.addEventListener('dragenter', function (evt) {
+    evt.preventDefault();
+  });
+  tokyoMapElement.addEventListener('dragleave', function (evt) {
+    evt.preventDefault();
+  });
+
+  var addressControl = document.getElementById('address');
+  addressControl.readOnly = true;
+
+  var pinHandle = document.getElementsByClassName('pin__main')[0];
+  pinHandle.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+    var startMove = {
+      x: evt.clientX, // {{координата х}}
+      y: evt.clientY // {{координата y}}
+    }
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      var shift = {
+        x: startMove.x - moveEvt.clientX, // {{координата х}}
+        y: startMove.y - moveEvt.clientY // {{координата y}}
+      }
+      startMove = {
+        x: moveEvt.clientX, // {{координата х}}
+        y: moveEvt.clientY // {{координата y}}
+      }
+      pinHandle.style.top = (pinHandle.offsetTop - shift.y) + 'px';
+      pinHandle.style.left = (pinHandle.offsetLeft - shift.x) + 'px';
+    }
+
+    function getPinArrowCoordinates(pinElement){
+      return {
+        x: pinElement.offsetLeft + Math.floor(pinElement.clientWidth / 2),
+        y: pinElement.offsetTop + pinElement.clientHeight,
+      }
+    }
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      addressControl.value = substituteTemplate(getTemplate('create_ad_form.address'), {
+        location: getPinArrowCoordinates(pinHandle)
+      })
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  })
 
 })();
 
@@ -404,23 +471,25 @@ window.form = (function () {
 // время заезда время выезда
 
 // 1
-  class FieldCorrection{
-    constructor(controlId){
+  class FieldCorrection {
+    constructor(controlId) {
       this.controlId = controlId;
       this.watchedControls = {};
     }
-    changeOn(controlId, setNewValueBy){
+
+    changeOn(controlId, setNewValueBy) {
       this.watchedControls[controlId] = setNewValueBy;
       return this;
     }
-    ready(){
+
+    ready() {
       this.watchedField = document.getElementById(this.controlId);
       var that = this;
-      for(let controlId of Object.keys(this.watchedControls)) {
+      for (let controlId of Object.keys(this.watchedControls)) {
         var control = document.getElementById(controlId);
-        document.getElementById(controlId).addEventListener('change', function() {
+        document.getElementById(controlId).addEventListener('change', function () {
           var newValue = that.watchedControls[controlId](getValue(control), getValue(that));
-          if(newValue === null) return;  // do not change
+          if (newValue === null) return;  // do not change
           setValue(that.watchedField, newValue)
         });
       }
@@ -429,8 +498,8 @@ window.form = (function () {
 
   let timeoutCorrection = new FieldCorrection('timeout');
   timeoutCorrection
-    .changeOn('time', function(value){
-      switch(value){
+    .changeOn('time', function (value) {
+      switch (value) {
         case 'После 12':
           return 'Выезд до 12';
         case 'После 13':
@@ -444,7 +513,7 @@ window.form = (function () {
 
   let priceCorrection = new FieldCorrection('price');
   priceCorrection
-    .changeOn('type', function(value, currentValue){
+    .changeOn('type', function (value, currentValue) {
       var currentPrice = parseFloat(currentValue);
       var minPrices = {
         'Квартира': 1000,
@@ -452,7 +521,7 @@ window.form = (function () {
         'Дворец': 10000
       }
       if (minPrices.hasOwnProperty(value)) {
-        if(currentPrice < minPrices[value]){
+        if (currentPrice < minPrices[value]) {
           return minPrices[value];
         }
       }
@@ -462,7 +531,7 @@ window.form = (function () {
 
   let capacityCorrection = new FieldCorrection('capacity');
   capacityCorrection
-    .changeOn('room_number', function(value){
+    .changeOn('room_number', function (value) {
       if (value === '1 комната') {
         return 'не для гостей';
       } else {
