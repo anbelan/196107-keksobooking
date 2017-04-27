@@ -78,6 +78,44 @@ window.data = (function () {
 
 })();
 
+// load.js
+
+window.load = (function () {
+  function showError(text) {
+    var error = document.createElement('div');
+    error.style.background = 'white';
+    error.style.position = 'absolute';
+    error.style.left = '100px';
+    error.style.top = '100px';
+    error.textContent = text;
+
+    document.body.appendChild(error);
+  }
+  showError('Ошибка');
+
+  function load(url, onload) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+
+    xhr.send(); // (1)
+
+    xhr.onreadystatechange = function() { // (3)
+      if (xhr.readyState != 4) return;
+
+      if (xhr.status != 200) {
+        showError(xhr.status + ': ' + xhr.statusText);
+      } else {
+        onload(JSON.parse(xhr.responseText));
+      }
+    }
+  }
+
+  return {
+    'load': load
+  };
+
+})();
+
 // map.js
 
 window.map = (function () {
@@ -87,25 +125,28 @@ window.map = (function () {
   window.card = (function () {
 
     var marker = document.querySelector('.tokyo__pin-map');
-    var fragment = document.createDocumentFragment();
 
     window.getTemplate = function getTemplate(templateId) {
       return document.getElementById(templateId).innerHTML
     }
 
-    for (var i = 0; i < 8; i++) {
-      ad[i].data = {
-        number: i
-      };
-      var markerPin = substituteTemplate(getTemplate('marker.template'), ad[i]);
-      var div = document.createElement('div');
-      div.innerHTML = markerPin;
-      var elements = div.childNodes;
-      fragment.appendChild(elements[1]);
-    }
+    function fillMap(ads) {
+      var fragment = document.createDocumentFragment();
+      for (var i = 0; i < ads.length; i++) {
+        console.log(ads[i]);
+        ads[i].data = {
+          number: i
+        };
+        var markerPin = substituteTemplate(getTemplate('marker.template'), ads[i]);
+        var div = document.createElement('div');
+        div.innerHTML = markerPin;
+        var elements = div.childNodes;
+        fragment.appendChild(elements[1]);
+      }
+      marker.appendChild(fragment);
+    };
 
-    marker.appendChild(fragment);
-
+    load.load('https://intensive-javascript-server-kjgvxfepjl.now.sh/keksobooking/data', fillMap);
 
   })();
 
@@ -161,14 +202,7 @@ window.map = (function () {
       }
     });
 
-    // return {
-    //   fillDialog: fillDialog;
-    //   closeDialog: closeDialog;
-    // }
-
   })();
-
-  // window.showCard.fillDialog();
 
 // pin.js
 
@@ -552,11 +586,5 @@ window.form = (function () {
       }
     })
     .ready();
-
-})();
-
-// show-card.js
-
-window.showCard = (function () {
 
 })();
