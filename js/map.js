@@ -109,14 +109,14 @@ window.map = (function () {
 
   })();
 
-// pin.js
+// show-card.js
 
-  window.pin = (function () {
+  window.showCard = (function () {
 
     var dialog = document.querySelector('#offer-dialog');
     var lodgeTemplate = document.querySelector('#lodge-template').content;
 
-    function fillDialog(advertisment) {
+    window.fillDialog = function fillDialog(advertisment) {
       var dialogPanelElements = lodgeTemplate.cloneNode(true);
       var dialogPanel = document.querySelector('.dialog__panel');
       dialogPanelElements.querySelector('.lodge__title').textContent = advertisment.offer.title;
@@ -145,9 +145,38 @@ window.map = (function () {
 
     fillDialog(ad[0]);
 
+    function closeDialog() {
+      document.getElementById('offer-dialog').style.display = 'none';
+      deactivatePins(null);
+    }
+
+    var dialogClose = document.querySelector('.dialog__close');
+    dialogClose.onclick = function () {
+      closeDialog();
+      return false;
+    }
+    dialogClose.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === 13) {
+        closeDialog();
+      }
+    });
+
+    // return {
+    //   fillDialog: fillDialog;
+    //   closeDialog: closeDialog;
+    // }
+
+  })();
+
+  // window.showCard.fillDialog();
+
+// pin.js
+
+  window.pin = (function () {
+
     // Задние #11
 
-    function deactivatePins(except) {
+    window.deactivatePins = function deactivatePins(except) {
       var pinsActive = document.getElementsByClassName('pin--active');
       for (var j = 0; j < pinsActive.length; j++) {
         if (except != pinsActive[j]) {
@@ -159,11 +188,6 @@ window.map = (function () {
     function makePinActive(pin) {
       deactivatePins(pin);
       pin.classList.add('pin--active');
-    }
-
-    function closeDialog() {
-      document.getElementById('offer-dialog').style.display = 'none';
-      deactivatePins(null);
     }
 
     var pins = document.getElementsByClassName('pin');
@@ -185,19 +209,6 @@ window.map = (function () {
         }
       });
     }
-
-    var dialogClose = document.querySelector('.dialog__close');
-    dialogClose.onclick = function () {
-      closeDialog();
-      return false;
-    }
-    dialogClose.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === 13) {
-        closeDialog();
-      }
-    });
-
-  })();
 
   var pinElement = document.querySelector('.tokyo__pin-map');
   var draggedItem = null;
@@ -267,6 +278,8 @@ window.map = (function () {
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   })
+
+  })();
 
 })();
 
@@ -539,5 +552,11 @@ window.form = (function () {
       }
     })
     .ready();
+
+})();
+
+// show-card.js
+
+window.showCard = (function () {
 
 })();
