@@ -5,7 +5,7 @@ window.pin = (function () {
   function deactivatePins(except) {
     var pinsActive = document.getElementsByClassName('pin--active');
     for (var j = 0; j < pinsActive.length; j++) {
-      if (except != pinsActive[j]) {
+      if (except !== pinsActive[j]) {
         pinsActive[j].classList.remove('pin--active');
       }
     }
@@ -25,48 +25,48 @@ window.pin = (function () {
     var startMove = {
       x: evt.clientX,
       y: evt.clientY
-    }
+    };
     var pinIsDraggedHandler = function (moveEvt) {
       moveEvt.preventDefault();
       var shift = {
         x: startMove.x - moveEvt.clientX,
         y: startMove.y - moveEvt.clientY
-      }
+      };
       startMove = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
-      }
+      };
       pinHandle.style.top = (pinHandle.offsetTop - shift.y) + 'px';
       pinHandle.style.left = (pinHandle.offsetLeft - shift.x) + 'px';
-    }
+    };
 
     function getPinArrowCoordinates(pinElement) {
       return {
         x: pinElement.offsetLeft + Math.floor(pinElement.clientWidth / 2),
         y: pinElement.offsetTop + pinElement.clientHeight,
-      }
+      };
     }
 
     var pinDroppedHandler = function (upEvt) {
       upEvt.preventDefault();
 
-      addressControl.value = data.substituteTemplate(card.getTemplate('create_ad_form.address'), {
+      addressControl.value = window.data.substituteTemplate(window.card.getTemplate('create_ad_form.address'), {
         location: getPinArrowCoordinates(pinHandle)
-      })
+      });
 
       document.removeEventListener('mousemove', pinIsDraggedHandler);
       document.removeEventListener('mouseup', pinDroppedHandler);
-    }
+    };
 
     document.addEventListener('mousemove', pinIsDraggedHandler);
     document.addEventListener('mouseup', pinDroppedHandler);
-  })
+  });
 
   var filterBlocks = document.getElementsByClassName('tokyo__filter');
   var featureBlocks = document.querySelectorAll('.tokyo__filter-set [name=feature]');
   var featureNames = [];
 
-  for (var i = 0; i < featureBlocks.length; i++) {
+  for (i = 0; i < featureBlocks.length; i++) {
     featureNames.push(featureBlocks[i].value);
   }
 
@@ -74,7 +74,7 @@ window.pin = (function () {
     for (var i = 0; i < pins.length; i++) {
       pins[i].style.display = 'none';
     }
-  };
+  }
   function showPins(pins) {
     for (var i = 0; i < pins.length; i++) {
       pins[i].style.display = 'block';
@@ -83,16 +83,17 @@ window.pin = (function () {
 
   function updateFilterObject() {
     var filterObject = {};
+    var currentField;
     for (var i = 0; i < filterBlocks.length; i++) {
-      var value = form.getValue(filterBlocks[i])
+      var value = window.form.getValue(filterBlocks[i]);
       if (value === 'any') {
-        continue
+        continue;
       }
-      var currentField = filterBlocks[i];
+      currentField = filterBlocks[i];
       filterObject[currentField.name] = value;
     }
-    for (var i = 0; i < featureBlocks.length; i++) {
-      var currentField = featureBlocks[i];
+    for (i = 0; i < featureBlocks.length; i++) {
+      currentField = featureBlocks[i];
       if (currentField.checked === true) {
         filterObject[currentField.value] = true;
       }
@@ -126,13 +127,13 @@ window.pin = (function () {
     }
 
     if (filterObject.hasOwnProperty('housing_room-number')) {
-      if (pinData.offer.rooms !== parseInt(filterObject['housing_room-number'])) {
+      if (pinData.offer.rooms !== parseInt(filterObject['housing_room-number'], 10)) {
         return false;
       }
     }
 
     if (filterObject.hasOwnProperty('housing_guests-number')) {
-      if (pinData.offer.guests !== parseInt(filterObject['housing_guests-number'])) {
+      if (pinData.offer.guests !== parseInt(filterObject['housing_guests-number'], 10)) {
         return false;
       }
     }
@@ -169,20 +170,21 @@ window.pin = (function () {
       if (state) {
         return;
       }
-      f.apply(this, arguments);
+      f(arguments);
       state = COOLDOWN;
       setTimeout(function () {
-        state = null
+        state = null;
       }, ms);
-    }
+    };
   }
 
+  var currentField;
   for (var i = 0; i < filterBlocks.length; i++) {
-    var currentField = filterBlocks[i];
+    currentField = filterBlocks[i];
     currentField.addEventListener('change', debounce(filterChangedHandler, 500));
   }
-  for (var i = 0; i < featureBlocks.length; i++) {
-    var currentField = featureBlocks[i];
+  for (i = 0; i < featureBlocks.length; i++) {
+    currentField = featureBlocks[i];
     currentField.addEventListener('change', debounce(filterChangedHandler, 500));
   }
 
