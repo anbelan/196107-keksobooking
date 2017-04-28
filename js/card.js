@@ -1,6 +1,3 @@
-/**
- * Created by annabelan on 27.04.17.
- */
 'use strict';
 
 window.card = (function () {

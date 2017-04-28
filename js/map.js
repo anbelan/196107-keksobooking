@@ -1,7 +1,5 @@
 'use strict';
 
-// map.js
-
 window.map = (function () {
 
   function fillMap(ads) {
@@ -9,7 +7,7 @@ window.map = (function () {
     for (var i = 0; i < pinElements.length; i++) {
       pinElements[i].remove();
     }
-    var marker = document.querySelector('.tokyo__pin-map');
+    var mapElement = document.querySelector('.tokyo__pin-map');
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < ads.length; i++) {
       ads[i].data = {
@@ -39,15 +37,11 @@ window.map = (function () {
         }
       });
     }
-    marker.appendChild(fragment);
+    mapElement.appendChild(fragment);
   };
 
   fillMap(data.ad);
 
-  load.load('https://intensive-javascript-server-kjgvxfepjl.now.sh/keksobooking/data', fillMap);
-
-  return {
-    'fillMap': fillMap
-  }
+  ajax.load('https://intensive-javascript-server-kjgvxfepjl.now.sh/keksobooking/data', fillMap);
 
 })();

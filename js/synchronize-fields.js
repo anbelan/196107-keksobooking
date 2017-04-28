@@ -1,6 +1,3 @@
-/**
- * Created by annabelan on 27.04.17.
- */
 'use strict';
 
 window.fields = (function () {
@@ -22,8 +19,8 @@ window.fields = (function () {
       for (let controlId of Object.keys(this.watchedControls)) {
         var control = document.getElementById(controlId);
         document.getElementById(controlId).addEventListener('change', function () {
-          var setNewValueBy = that.watchedControls[controlId];
-          var newValue = setNewValueBy(form.getValue(control), form.getValue(that.watchedField));
+          var valueSetter = that.watchedControls[controlId];
+          var newValue = valueSetter(form.getValue(control), form.getValue(that.watchedField));
           if (newValue === null) {
             return;
           }  // do not change

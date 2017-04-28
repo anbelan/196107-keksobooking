@@ -1,9 +1,6 @@
-/**
- * Created by annabelan on 27.04.17.
- */
 'use strict';
 
-window.load = (function () {
+window.ajax = (function () {
   function showError(text) {
     var error = document.createElement('div');
     error.style.background = 'white';
@@ -15,13 +12,13 @@ window.load = (function () {
     document.body.appendChild(error);
   }
 
-  function load(url, onload) {
+  function load(url, contentLoadedHandler) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
 
     xhr.send(); // (1)
 
-    xhr.onreadystatechange = function () { // (3)
+    xhr.onreadystatechange = function () {
       if (xhr.readyState != 4) {
         return;
       }
@@ -29,7 +26,7 @@ window.load = (function () {
       if (xhr.status != 200) {
         showError(xhr.status + ': ' + xhr.statusText);
       } else {
-        onload(JSON.parse(xhr.responseText));
+        contentLoadedHandler(JSON.parse(xhr.responseText));
       }
     }
   }

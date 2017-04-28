@@ -1,6 +1,3 @@
-/**
- * Created by annabelan on 27.04.17.
- */
 'use strict';
 
 window.pin = (function () {
@@ -22,22 +19,22 @@ window.pin = (function () {
   var addressControl = document.getElementById('address');
   addressControl.readOnly = true;
 
-  var pinHandle = document.getElementsByClassName('pin__main')[0];
+  var pinHandle = document.querySelector('.pin__main');
   pinHandle.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     var startMove = {
-      x: evt.clientX, // {{координата х}}
-      y: evt.clientY // {{координата y}}
+      x: evt.clientX,
+      y: evt.clientY
     }
-    var onMouseMove = function (moveEvt) {
+    var pinIsDraggedHandler = function (moveEvt) {
       moveEvt.preventDefault();
       var shift = {
-        x: startMove.x - moveEvt.clientX, // {{координата х}}
-        y: startMove.y - moveEvt.clientY // {{координата y}}
+        x: startMove.x - moveEvt.clientX,
+        y: startMove.y - moveEvt.clientY
       }
       startMove = {
-        x: moveEvt.clientX, // {{координата х}}
-        y: moveEvt.clientY // {{координата y}}
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
       }
       pinHandle.style.top = (pinHandle.offsetTop - shift.y) + 'px';
       pinHandle.style.left = (pinHandle.offsetLeft - shift.x) + 'px';
@@ -50,22 +47,20 @@ window.pin = (function () {
       }
     }
 
-    var onMouseUp = function (upEvt) {
+    var pinDroppedHandler = function (upEvt) {
       upEvt.preventDefault();
 
       addressControl.value = data.substituteTemplate(card.getTemplate('create_ad_form.address'), {
         location: getPinArrowCoordinates(pinHandle)
       })
 
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousemove', pinIsDraggedHandler);
+      document.removeEventListener('mouseup', pinDroppedHandler);
     }
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', pinIsDraggedHandler);
+    document.addEventListener('mouseup', pinDroppedHandler);
   })
-
-// фильтры
 
   var filterBlocks = document.getElementsByClassName('tokyo__filter');
   var featureBlocks = document.querySelectorAll('.tokyo__filter-set [name=feature]');
@@ -84,7 +79,6 @@ window.pin = (function () {
     for (var i = 0; i < pins.length; i++) {
       pins[i].style.display = 'block';
     }
-    ;
   }
 
   function updateFilterObject() {
@@ -152,7 +146,7 @@ window.pin = (function () {
     return true;
   }
 
-  function filterMap() {
+  function filterChangedHandler() {
     var filterObject = updateFilterObject();
     var pinElements = document.querySelectorAll('.pin:not(.pin__main)');
     var pinsToShow = [];
@@ -185,11 +179,11 @@ window.pin = (function () {
 
   for (var i = 0; i < filterBlocks.length; i++) {
     var currentField = filterBlocks[i];
-    currentField.addEventListener('change', debounce(filterMap, 500));
+    currentField.addEventListener('change', debounce(filterChangedHandler, 500));
   }
   for (var i = 0; i < featureBlocks.length; i++) {
     var currentField = featureBlocks[i];
-    currentField.addEventListener('change', debounce(filterMap, 500));
+    currentField.addEventListener('change', debounce(filterChangedHandler, 500));
   }
 
   return {

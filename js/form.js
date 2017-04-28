@@ -1,6 +1,3 @@
-/**
- * Created by annabelan on 27.04.17.
- */
 'use strict';
 
 window.form = (function () {
@@ -49,7 +46,7 @@ window.form = (function () {
       return values
     }
 
-    restoreDefaultValues(form, values) {
+    restoreDefaultValues(values) {
       var keys = Object.keys(values);
       for (let controlId of keys) {
         var control = document.getElementById(controlId);
@@ -75,7 +72,7 @@ window.form = (function () {
           event.preventDefault();
         } else {
           console.log('форма валидна, отправляем...');
-          that.restoreDefaultValues(that.form, that.defaultValues);
+          that.restoreDefaultValues(that.defaultValues);
           event.preventDefault();
         }
       })
@@ -141,7 +138,7 @@ window.form = (function () {
     }
   }
 
-  function requiredChecker(userInput) {
+  function checkInputRequired(userInput) {
     if (userInput) {
       return true;
     } else {
@@ -149,11 +146,11 @@ window.form = (function () {
     }
   }
 
-  function numberChecker(userInput) {
+  function checkInputIsNumeric(userInput) {
     return !isNaN(parseFloat(userInput)) && isFinite(userInput);
   }
 
-  function lengthString(min, max) {
+  function checkInputLength(min, max) {
     return function (userInput) {
       if (userInput.length < min) {
         return false;
@@ -165,7 +162,7 @@ window.form = (function () {
     }
   }
 
-  function numberRange(min, max) {
+  function checkInputInRange(min, max) {
     return function (userInput) {
       var number = parseFloat(userInput);
       if (number < min) {
@@ -180,30 +177,24 @@ window.form = (function () {
 
   let titleValidator = new Validator('title');
   titleValidator
-    .setDefaultCheckers(requiredChecker, lengthString(30, 100));
+    .setDefaultCheckers(checkInputRequired, checkInputLength(30, 100));
 
   let priceValidator = new Validator('price');
   priceValidator
-    .setDefaultCheckers(requiredChecker, numberChecker, numberRange(1000, 1000000))
+    .setDefaultCheckers(checkInputRequired, checkInputIsNumeric, checkInputInRange(1000, 1000000))
     .resetCheckersOn('type', function (value) {
       if (value == 'Квартира') {
-        return [requiredChecker, numberChecker, numberRange(1000, 1000000)];
+        return [checkInputRequired, checkInputIsNumeric, checkInputInRange(1000, 1000000)];
       } else if (value == 'Лачуга') {
-        return [requiredChecker, numberChecker, numberRange(0, 1000000)];
+        return [checkInputRequired, checkInputIsNumeric, checkInputInRange(0, 1000000)];
       } else if (value == 'Дворец') {
-        return [requiredChecker, numberChecker, numberRange(10000, 1000000)];
+        return [checkInputRequired, checkInputIsNumeric, checkInputInRange(10000, 1000000)];
       }
     });
 
   var formValidator = new FormValidator('create_ad_form');
   formValidator.withValidators(titleValidator, priceValidator);
   formValidator.ready();
-
-// устанавливать значения при смене других значений
-
-// время заезда время выезда
-
-// 1
 
   return {
     'getValue': getValue,
