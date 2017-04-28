@@ -24,7 +24,9 @@ window.fields = (function () {
         document.getElementById(controlId).addEventListener('change', function () {
           var setNewValueBy = that.watchedControls[controlId];
           var newValue = setNewValueBy(form.getValue(control), form.getValue(that.watchedField));
-          if (newValue === null) return;  // do not change
+          if (newValue === null) {
+            return;
+          }  // do not change
           form.setValue(that.watchedField, newValue)
         });
       }

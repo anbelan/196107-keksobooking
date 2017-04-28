@@ -5,6 +5,10 @@
 window.map = (function () {
 
   function fillMap(ads) {
+    var pinElements = document.querySelectorAll('.pin:not(.pin__main)');
+    for (var i = 0; i < pinElements.length; i++) {
+      pinElements[i].remove();
+    }
     var marker = document.querySelector('.tokyo__pin-map');
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < ads.length; i++) {
@@ -18,7 +22,9 @@ window.map = (function () {
       currentPin.advertismentData = ads[i];
       fragment.appendChild(currentPin);
       currentPin.addEventListener('click', function () {
-        if (!this.dataset.addNumber) return;
+        if (!this.dataset.addNumber) {
+          return;
+        }
         pin.makePinActive(this);
         showCard.fillDialog(ads[this.dataset.addNumber]);
       });
@@ -36,6 +42,12 @@ window.map = (function () {
     marker.appendChild(fragment);
   };
 
+  fillMap(data.ad);
+
   load.load('https://intensive-javascript-server-kjgvxfepjl.now.sh/keksobooking/data', fillMap);
+
+  return {
+    'fillMap': fillMap
+  }
 
 })();

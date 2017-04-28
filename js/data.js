@@ -42,20 +42,21 @@ window.data = (function () {
 
   var ad = [];
   var avatarNumbers = [];
-  while (avatarNumbers.length < 8) {
-    var temp = '0' + generateRandomInt(1, 8);
+  var PIN_NUMBER = 3;
+  while (avatarNumbers.length < PIN_NUMBER) {
+    var temp = '0' + generateRandomInt(1, PIN_NUMBER);
     if (avatarNumbers.indexOf(temp) == -1) {
       avatarNumbers.push(temp)
     }
   }
   var offerTitles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-  while (offerTitles.length < 8) {
+  while (offerTitles.length < PIN_NUMBER) {
     var temp = offerTitles[generateRandomInt(0, offerTitles.length - 1)];
     if (offerTitles.indexOf(temp) == -1) {
       offerTitles.push(temp)
     }
   }
-  for (var i = 0; i < 8; i++) {
+  for (var i = 0; i < PIN_NUMBER; i++) {
     ad.push(generateObject(avatarNumbers[i], offerTitles[i]))
   }
 
@@ -74,7 +75,8 @@ window.data = (function () {
   }
 
   return {
-    'substituteTemplate': substituteTemplate
+    'substituteTemplate': substituteTemplate,
+    'ad': ad
   }
 
 })();

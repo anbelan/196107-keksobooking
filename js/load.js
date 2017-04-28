@@ -21,8 +21,10 @@ window.load = (function () {
 
     xhr.send(); // (1)
 
-    xhr.onreadystatechange = function() { // (3)
-      if (xhr.readyState != 4) return;
+    xhr.onreadystatechange = function () { // (3)
+      if (xhr.readyState != 4) {
+        return;
+      }
 
       if (xhr.status != 200) {
         showError(xhr.status + ': ' + xhr.statusText);

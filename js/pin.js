@@ -43,7 +43,7 @@ window.pin = (function () {
       pinHandle.style.left = (pinHandle.offsetLeft - shift.x) + 'px';
     }
 
-    function getPinArrowCoordinates(pinElement){
+    function getPinArrowCoordinates(pinElement) {
       return {
         x: pinElement.offsetLeft + Math.floor(pinElement.clientWidth / 2),
         y: pinElement.offsetTop + pinElement.clientHeight,
@@ -71,23 +71,25 @@ window.pin = (function () {
   var featureBlocks = document.querySelectorAll('.tokyo__filter-set [name=feature]');
   var featureNames = [];
 
-  for(var i = 0; i < featureBlocks.length; i++) {
+  for (var i = 0; i < featureBlocks.length; i++) {
     featureNames.push(featureBlocks[i].value);
   }
 
   function hidePins(pins) {
-    for(var i = 0; i < pins.length; i++) {
+    for (var i = 0; i < pins.length; i++) {
       pins[i].style.display = 'none';
     }
   };
   function showPins(pins) {
     for (var i = 0; i < pins.length; i++) {
       pins[i].style.display = 'block';
-    };
+    }
+    ;
   }
+
   function updateFilterObject() {
     var filterObject = {};
-    for(var i = 0; i < filterBlocks.length; i++) {
+    for (var i = 0; i < filterBlocks.length; i++) {
       var value = form.getValue(filterBlocks[i])
       if (value === 'any') {
         continue
@@ -95,9 +97,9 @@ window.pin = (function () {
       var currentField = filterBlocks[i];
       filterObject[currentField.name] = value;
     }
-    for(var i = 0; i < featureBlocks.length; i++) {
+    for (var i = 0; i < featureBlocks.length; i++) {
       var currentField = featureBlocks[i];
-      if(currentField.checked === true) {
+      if (currentField.checked === true) {
         filterObject[currentField.value] = true;
       }
     }
@@ -118,11 +120,11 @@ window.pin = (function () {
         if (pinData.offer.price < 10000 || pinData.offer.price > 50000) {
           return false;
         }
-      } else if(filterObject['housing_price'] === 'low') {
+      } else if (filterObject['housing_price'] === 'low') {
         if (pinData.offer.price >= 10000) {
           return false;
         }
-      } else if(filterObject['housing_price'] === 'high') {
+      } else if (filterObject['housing_price'] === 'high') {
         if (pinData.offer.price <= 50000) {
           return false;
         }
@@ -141,7 +143,7 @@ window.pin = (function () {
       }
     }
 
-    for(var i = 0; i < featureNames.length; i++) {
+    for (var i = 0; i < featureNames.length; i++) {
       if (filterObject[featureNames[i]] === true && pinData.offer.features.indexOf(featureNames[i]) === -1) {
         return false;
       }
@@ -155,8 +157,8 @@ window.pin = (function () {
     var pinElements = document.querySelectorAll('.pin:not(.pin__main)');
     var pinsToShow = [];
     var pinsToHide = [];
-    for(var i = 0; i < pinElements.length; i++) {
-      if(checkPinSatisfiesFilter(pinElements[i], filterObject) === true) {
+    for (var i = 0; i < pinElements.length; i++) {
+      if (checkPinSatisfiesFilter(pinElements[i], filterObject) === true) {
         pinsToShow.push(pinElements[i]);
       } else {
         pinsToHide.push(pinElements[i]);
@@ -169,19 +171,23 @@ window.pin = (function () {
   function debounce(f, ms) {
     var state = null;
     var COOLDOWN = 1;
-    return function() {
-      if (state) return;
+    return function () {
+      if (state) {
+        return;
+      }
       f.apply(this, arguments);
       state = COOLDOWN;
-      setTimeout(function() { state = null }, ms);
+      setTimeout(function () {
+        state = null
+      }, ms);
     }
   }
 
-  for(var i = 0; i < filterBlocks.length; i++) {
+  for (var i = 0; i < filterBlocks.length; i++) {
     var currentField = filterBlocks[i];
     currentField.addEventListener('change', debounce(filterMap, 500));
   }
-  for(var i = 0; i < featureBlocks.length; i++) {
+  for (var i = 0; i < featureBlocks.length; i++) {
     var currentField = featureBlocks[i];
     currentField.addEventListener('change', debounce(filterMap, 500));
   }

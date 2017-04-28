@@ -7,8 +7,9 @@ window.form = (function () {
 
   function getValue(domElement) {
     if (domElement.tagName === 'INPUT') {
-      if (domElement.type !== 'radio')
+      if (domElement.type !== 'radio') {
         return domElement.value;
+      }
     } else if (domElement.tagName === 'SELECT') {
       return domElement.options[domElement.selectedIndex].value;
     }
@@ -52,7 +53,9 @@ window.form = (function () {
       var keys = Object.keys(values);
       for (let controlId of keys) {
         var control = document.getElementById(controlId);
-        if (control) setValue(control, values[controlId]);
+        if (control) {
+          setValue(control, values[controlId]);
+        }
       }
     }
 
@@ -80,8 +83,9 @@ window.form = (function () {
     }
 
     withValidators() {
-      var that = this;
-      for (var i = 0; i < arguments.length; i++)  this.validators.push(arguments[i]);
+      for (var i = 0; i < arguments.length; i++) {
+        this.validators.push(arguments[i])
+      }
       return this;
     }
 
