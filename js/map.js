@@ -15,6 +15,7 @@ window.map = (function () {
       var div = document.createElement('div');
       div.innerHTML = markerPin;
       var currentPin = div.childNodes[1];
+      currentPin.advertismentData = ads[i];
       fragment.appendChild(currentPin);
       currentPin.addEventListener('click', function () {
         if (!this.dataset.addNumber) return;
