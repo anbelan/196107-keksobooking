@@ -1,6 +1,3 @@
-/**
- * Created by annabelan on 27.04.17.
- */
 'use strict';
 
 window.data = (function () {
@@ -12,8 +9,8 @@ window.data = (function () {
   function generateObject(avatarNumber, offerTitle) {
     var location = {
       x: generateRandomInt(300, 900),
-      y: generateRandomInt(100, 500),
-    }
+      y: generateRandomInt(100, 500)
+    };
     return {
       'author': {
         'avatar': 'img/avatars/user' + avatarNumber + '.png'
@@ -37,27 +34,34 @@ window.data = (function () {
         'x': location.x,
         'y': location.y
       }
-    }
+    };
   }
 
-  var ad = [];
-  var avatarNumbers = [];
-  while (avatarNumbers.length < 8) {
-    var temp = '0' + generateRandomInt(1, 8);
-    if (avatarNumbers.indexOf(temp) == -1) {
-      avatarNumbers.push(temp)
+  var NUMBER_OF_PINS = 3;
+
+  function generateAds(quantity) {
+    var avatarNumbers = [];
+    while (avatarNumbers.length < quantity) {
+      var temp = '0' + generateRandomInt(1, quantity);
+      if (avatarNumbers.indexOf(temp) === -1) {
+        avatarNumbers.push(temp);
+      }
     }
-  }
-  var offerTitles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-  while (offerTitles.length < 8) {
-    var temp = offerTitles[generateRandomInt(0, offerTitles.length - 1)];
-    if (offerTitles.indexOf(temp) == -1) {
-      offerTitles.push(temp)
+    var offerTitles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
+    while (offerTitles.length < quantity) {
+      temp = offerTitles[generateRandomInt(0, offerTitles.length - 1)];
+      if (offerTitles.indexOf(temp) === -1) {
+        offerTitles.push(temp);
+      }
     }
+    var ad = [];
+    for (var i = 0; i < quantity; i++) {
+      ad.push(generateObject(avatarNumbers[i], offerTitles[i]));
+    }
+    return ad;
   }
-  for (var i = 0; i < 8; i++) {
-    ad.push(generateObject(avatarNumbers[i], offerTitles[i]))
-  }
+
+  var ad = generateAds(NUMBER_OF_PINS);
 
   function substituteTemplate(template, data) {
     var keys = Object.keys(data);
@@ -74,7 +78,8 @@ window.data = (function () {
   }
 
   return {
-    'substituteTemplate': substituteTemplate
-  }
+    'substituteTemplate': substituteTemplate,
+    'ad': ad
+  };
 
 })();
