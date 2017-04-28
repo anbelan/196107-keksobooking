@@ -167,7 +167,7 @@ window.pin = (function () {
     var state = null;
     var COOLDOWN = 1;
     return function () {
-      if (state) {
+      if (state === COOLDOWN) {
         return;
       }
       f(arguments);

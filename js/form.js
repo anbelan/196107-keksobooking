@@ -49,7 +49,7 @@ window.form = (function () {
       var keys = Object.keys(values);
       for (var i = 0; i < keys.length; i++) {
         var control = document.getElementById(keys[i]);
-        if (control) {
+        if (control !== null) {
           setValue(control, values[keys[i]]);
         }
       }
@@ -99,7 +99,7 @@ window.form = (function () {
     this.checkers = [];
 
     this.getValidatedControl = function () {
-      if (!this.validatedContol) {
+      if (this.validatedContol === null) {
         this.validatedContol = document.getElementById(this.validatedContolId);
       }
       return this.validatedContol;

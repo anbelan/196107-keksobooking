@@ -68,9 +68,8 @@ window.fields = (function () {
     .changeOn('room_number', function (value) {
       if (value === '1 комната') {
         return 'не для гостей';
-      } else {
-        return 'для 3 гостей';
       }
+      return 'для 3 гостей';
     })
     .ready();
 })();
