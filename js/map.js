@@ -9,39 +9,45 @@ window.map = (function () {
     }
     var mapElement = document.querySelector('.tokyo__pin-map');
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < ads.length; i++) {
+    for (i = 0; i < ads.length; i++) {
       ads[i].data = {
         number: i
       };
-      var markerPin = data.substituteTemplate(card.getTemplate('marker.template'), ads[i]);
+      var markerPin = window.data.substituteTemplate(window.card.getTemplate('marker.template'), ads[i]);
       var div = document.createElement('div');
       div.innerHTML = markerPin;
       var currentPin = div.childNodes[1];
       currentPin.advertismentData = ads[i];
       fragment.appendChild(currentPin);
-      currentPin.addEventListener('click', function () {
-        if (!this.dataset.addNumber) {
-          return;
-        }
-        pin.makePinActive(this);
-        showCard.fillDialog(ads[this.dataset.addNumber]);
-      });
-      currentPin.addEventListener('focus', function () {
-        pin.makePinActive(this);
-      });
-      currentPin.addEventListener('keydown', function (evt) {
-        if (evt.keyCode === 13) {
-          showCard.fillDialog(ads[this.dataset.addNumber]);
-        } else if (evt.keyCode === 27) {
-          card.closeDialog();
-        }
-      });
+      currentPin.addEventListener('click', function (pin) {
+        return function () {
+          if (pin.dataset.hasOwnProperty('addNumber') === false) {
+            return;
+          }
+          window.pin.makePinActive(pin);
+          window.showCard.fillDialog(ads[pin.dataset.addNumber]);
+        };
+      }(currentPin));
+      currentPin.addEventListener('focus', function (pin) {
+        return function () {
+          window.pin.makePinActive(pin);
+        };
+      }(currentPin));
+      currentPin.addEventListener('keydown', function (pin) {
+        return function (evt) {
+          if (evt.keyCode === 13) {
+            window.showCard.fillDialog(ads[pin.dataset.addNumber]);
+          } else if (evt.keyCode === 27) {
+            window.card.closeDialog();
+          }
+        };
+      }(currentPin));
     }
     mapElement.appendChild(fragment);
-  };
+  }
 
-  fillMap(data.ad);
+  fillMap(window.data.ad);
 
-  ajax.load('https://intensive-javascript-server-kjgvxfepjl.now.sh/keksobooking/data', fillMap);
+  window.ajax.load('https://intensive-javascript-server-kjgvxfepjl.now.sh/keksobooking/data', fillMap);
 
 })();

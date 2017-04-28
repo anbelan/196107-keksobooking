@@ -5,6 +5,7 @@ window.ajax = (function () {
     var error = document.createElement('div');
     error.style.background = 'white';
     error.style.position = 'absolute';
+    error.padding = '20px';
     error.style.left = '100px';
     error.style.top = '100px';
     error.textContent = text;
@@ -19,16 +20,16 @@ window.ajax = (function () {
     xhr.send(); // (1)
 
     xhr.onreadystatechange = function () {
-      if (xhr.readyState != 4) {
+      if (xhr.readyState !== 4) {
         return;
       }
 
-      if (xhr.status != 200) {
+      if (xhr.status !== 200) {
         showError(xhr.status + ': ' + xhr.statusText);
       } else {
         contentLoadedHandler(JSON.parse(xhr.responseText));
       }
-    }
+    };
   }
 
   return {

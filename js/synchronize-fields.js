@@ -2,35 +2,35 @@
 
 window.fields = (function () {
 
-  class FieldCorrection {
-    constructor(controlId) {
-      this.controlId = controlId;
-      this.watchedControls = {};
-    }
+  function FieldCorrection(controlId) {
+    this.controlId = controlId;
+    this.watchedControls = {};
 
-    changeOn(controlId, setNewValueBy) {
-      this.watchedControls[controlId] = setNewValueBy;
+    this.changeOn = function (watchedControlId, setNewValueBy) {
+      this.watchedControls[watchedControlId] = setNewValueBy;
       return this;
-    }
+    };
 
-    ready() {
+    this.ready = function () {
       this.watchedField = document.getElementById(this.controlId);
       var that = this;
-      for (let controlId of Object.keys(this.watchedControls)) {
-        var control = document.getElementById(controlId);
-        document.getElementById(controlId).addEventListener('change', function () {
-          var valueSetter = that.watchedControls[controlId];
-          var newValue = valueSetter(form.getValue(control), form.getValue(that.watchedField));
+      var keys = Object.keys(this.watchedControls);
+      for (var i = 0; i < keys.length; i++) {
+        var watchedControlId = keys[i];
+        var control = document.getElementById(watchedControlId);
+        document.getElementById(watchedControlId).addEventListener('change', function () {
+          var valueSetter = that.watchedControls[watchedControlId];
+          var newValue = valueSetter(window.form.getValue(control), window.form.getValue(that.watchedField));
           if (newValue === null) {
             return;
           }  // do not change
-          form.setValue(that.watchedField, newValue)
+          window.form.setValue(that.watchedField, newValue);
         });
       }
-    }
+    };
   }
 
-  let timeoutCorrection = new FieldCorrection('timeout');
+  var timeoutCorrection = new FieldCorrection('timeout');
   timeoutCorrection
     .changeOn('time', function (value) {
       switch (value) {
@@ -45,7 +45,7 @@ window.fields = (function () {
     })
     .ready();
 
-  let priceCorrection = new FieldCorrection('price');
+  var priceCorrection = new FieldCorrection('price');
   priceCorrection
     .changeOn('type', function (value, currentValue) {
       var currentPrice = parseFloat(currentValue);
@@ -53,7 +53,7 @@ window.fields = (function () {
         'Квартира': 1000,
         'Лачуга': 0,
         'Дворец': 10000
-      }
+      };
       if (minPrices.hasOwnProperty(value)) {
         if (currentPrice < minPrices[value]) {
           return minPrices[value];
@@ -63,7 +63,7 @@ window.fields = (function () {
     })
     .ready();
 
-  let capacityCorrection = new FieldCorrection('capacity');
+  var capacityCorrection = new FieldCorrection('capacity');
   capacityCorrection
     .changeOn('room_number', function (value) {
       if (value === '1 комната') {
