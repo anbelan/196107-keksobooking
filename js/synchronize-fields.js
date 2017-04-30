@@ -16,7 +16,7 @@ window.fields = (function () {
       var currentValue = window.form.getValue(dependentControl);
       var newValue = valueGetter(window.form.getValue(changedControl), currentValue);
       if (newValue === null || newValue === currentValue) {
-        return; // do nothing
+        return;
       }
       window.form.setValue(dependentControl, newValue);
     };
@@ -35,7 +35,6 @@ window.fields = (function () {
         }(control));
       }
       if (keys.length === 1) {
-        // вырожденный случай, можно синхронизировать значение сразу
         this.__performChange(this.watchedField, document.getElementById(keys[0]));
       }
     };
@@ -51,6 +50,21 @@ window.fields = (function () {
           return 'Выезд до 13';
         case 'После 14':
           return 'Выезд до 14';
+      }
+      return null;
+    })
+    .ready();
+
+  var timeCorrection = new FieldCorrection('time');
+  timeCorrection
+    .changeOn('timeout', function (value) {
+      switch (value) {
+        case 'Выезд до 12':
+          return 'После 12';
+        case 'Выезд до 13':
+          return 'После 13';
+        case 'Выезд до 14':
+          return 'После 14';
       }
       return null;
     })
@@ -81,6 +95,16 @@ window.fields = (function () {
         return 'не для гостей';
       }
       return 'для 3 гостей';
+    })
+    .ready();
+
+  var roomCorrection = new FieldCorrection('room_number');
+  roomCorrection
+    .changeOn('capacity', function (value) {
+      if (value === 'не для гостей') {
+        return '1 комната';
+      }
+      return null;
     })
     .ready();
 })();

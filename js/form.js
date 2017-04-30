@@ -179,8 +179,12 @@ window.form = (function () {
       return [];
     });
 
+  var addressValidator = new Validator('address');
+  addressValidator
+    .setDefaultCheckers(checkInputRequired);
+
   var formValidator = new FormValidator('create_ad_form');
-  formValidator.withValidators(titleValidator, priceValidator);
+  formValidator.withValidators(titleValidator, priceValidator, addressValidator);
   formValidator.ready();
 
   return {
