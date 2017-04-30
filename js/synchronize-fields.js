@@ -11,6 +11,16 @@ window.fields = (function () {
       return this;
     };
 
+    this.__performChange = function(dependentControl, changedControl) {
+      var valueGetter = this.watchedControls[changedControl.id];
+      var currentValue = window.form.getValue(dependentControl);
+      var newValue = valueGetter(window.form.getValue(changedControl), currentValue);
+      if (newValue === null || newValue === currentValue) {
+        return; // do nothing
+      }
+      window.form.setValue(dependentControl, newValue);
+    }
+
     this.ready = function () {
       this.watchedField = document.getElementById(this.controlId);
       var that = this;
@@ -18,14 +28,15 @@ window.fields = (function () {
       for (var i = 0; i < keys.length; i++) {
         var watchedControlId = keys[i];
         var control = document.getElementById(watchedControlId);
-        document.getElementById(watchedControlId).addEventListener('change', function () {
-          var valueSetter = that.watchedControls[watchedControlId];
-          var newValue = valueSetter(window.form.getValue(control), window.form.getValue(that.watchedField));
-          if (newValue === null) {
-            return;
-          }  // do not change
-          window.form.setValue(that.watchedField, newValue);
-        });
+        control.addEventListener('change', function (currentControl) {
+          return function() {
+            that.__performChange(that.watchedField, currentControl);
+          };
+        }(control));
+      }
+      if (keys.length === 1) {
+        // вырожденный случай, можно синхронизировать значение сразу
+        this.__performChange(this.watchedField, document.getElementById(keys[0]));
       }
     };
   }
