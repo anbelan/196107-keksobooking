@@ -16,8 +16,9 @@ window.card = (function () {
     closeDialog();
     return false;
   };
+  var ENTER_KEY_NUMBER = 13;
   dialogClose.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === 13) {
+    if (evt.keyCode === ENTER_KEY_NUMBER) {
       closeDialog();
     }
   });

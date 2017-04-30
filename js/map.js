@@ -33,11 +33,13 @@ window.map = (function () {
           window.pin.makePinActive(pin);
         };
       }(currentPin));
+      var ENTER_KEY_NUMBER = 13;
+      var ESC_KEY_NUMBER = 27;
       currentPin.addEventListener('keydown', function (pin) {
         return function (evt) {
-          if (evt.keyCode === 13) {
+          if (evt.keyCode === ENTER_KEY_NUMBER) {
             window.showCard.fillDialog(ads[pin.dataset.addNumber]);
-          } else if (evt.keyCode === 27) {
+          } else if (evt.keyCode === ESC_KEY_NUMBER) {
             window.card.closeDialog();
           }
         };
