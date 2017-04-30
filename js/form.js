@@ -31,12 +31,12 @@ window.form = (function () {
     this.validators = [];
 
     this.rememberDefaultValues = function (form) {
-      var inputs = document.getElementsByTagName('input');
+      var inputs = this.form.getElementsByTagName('input');
       var values = {};
       for (var i = 0; i < inputs.length; i++) {
         values[inputs[i].id] = getValue(inputs[i]);
       }
-      var selects = document.getElementsByTagName('select');
+      var selects = this.form.getElementsByTagName('select');
       for (i = 0; i < selects.length; i++) {
         values[selects[i].id] = getValue(selects[i]);
       }
@@ -105,7 +105,11 @@ window.form = (function () {
     };
 
     this.setDefaultCheckers = function () {
-      this.setCheckers(arguments);
+      var checks = [];
+      for (var i = 0; i < arguments.length; i++) {
+        checks.push(arguments[i]);
+      }
+      this.setCheckers(checks);
       return this;
     };
 
@@ -115,12 +119,9 @@ window.form = (function () {
 
     this.isValid = function () {
       var value = getValue(this.getValidatedControl());
-      for (var i = 0; i < this.checkers.length; i++) {
-        if (!this.checkers[i](value)) {
-          return false;
-        }
-      }
-      return true;
+      return this.checkers.every(function (validationFunc) {
+        return validationFunc(value);
+      });
     };
 
     this.resetCheckersOn = function (watchedElementId, getCheckersByValue) {

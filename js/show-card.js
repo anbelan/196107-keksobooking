@@ -18,10 +18,9 @@ window.showCard = (function () {
     }[advertisment.offer.type];
     dialogPanelElements.querySelector('.lodge__rooms-and-guests').textContent = 'Для ' + advertisment.offer.guests + ' гостей в ' + advertisment.offer.rooms + ' комнатах';
     dialogPanelElements.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + advertisment.offer.checkin + ', выезд до ' + advertisment.offer.checkout;
-    var features = '';
-    for (var i = 0; i < advertisment.offer.features.length; i++) {
-      features = features + '<span class="feature__image feature__image--' + advertisment.offer.features[i] + '"></span>';
-    }
+    var features = advertisment.offer.features.map(function (feature) {
+      return '<span class="feature__image feature__image--' + feature + '"></span>';
+    }).join('');
     dialogPanelElements.querySelector('.lodge__features').innerHTML = features;
 
     dialogPanelElements.querySelector('.lodge__description').textContent = advertisment.offer.description;
