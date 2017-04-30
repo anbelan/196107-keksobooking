@@ -21,8 +21,8 @@ window.map = (function () {
       fragment.appendChild(currentPin);
       currentPin.addEventListener('click', function (pin) {
         return function () {
-          if (pin.dataset.hasOwnProperty('addNumber') === false) {
-            return;
+          if (!pin.dataset.hasOwnProperty('addNumber')) {
+            return;  // do nothing
           }
           window.pin.makePinActive(pin);
           window.showCard.fillDialog(ads[pin.dataset.addNumber]);

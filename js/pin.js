@@ -94,7 +94,7 @@ window.pin = (function () {
     }
     for (i = 0; i < featureBlocks.length; i++) {
       currentField = featureBlocks[i];
-      if (currentField.checked === true) {
+      if (currentField.checked) {
         filterObject[currentField.value] = true;
       }
     }
@@ -139,7 +139,7 @@ window.pin = (function () {
     }
 
     for (var i = 0; i < featureNames.length; i++) {
-      if (filterObject[featureNames[i]] === true && pinData.offer.features.indexOf(featureNames[i]) === -1) {
+      if (Boolean(filterObject[featureNames[i]]) && pinData.offer.features.indexOf(featureNames[i]) === -1) {
         return false;
       }
     }
@@ -153,7 +153,7 @@ window.pin = (function () {
     var pinsToShow = [];
     var pinsToHide = [];
     for (var i = 0; i < pinElements.length; i++) {
-      if (checkPinSatisfiesFilter(pinElements[i], filterObject) === true) {
+      if (checkPinSatisfiesFilter(pinElements[i], filterObject)) {
         pinsToShow.push(pinElements[i]);
       } else {
         pinsToHide.push(pinElements[i]);

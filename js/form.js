@@ -60,18 +60,17 @@ window.form = (function () {
       this.form.addEventListener('submit', function (event) {
         var isValid = true;
         for (var i = 0; i < that.validators.length; i++) {
-          if (that.validators[i].isValid() === false) {
+          if (!that.validators[i].isValid()) {
             isValid = false;
             that.mark(that.validators[i].getValidatedControl(), false);
           } else {
             that.mark(that.validators[i].getValidatedControl(), true);
           }
         }
-        if (isValid === false) {
-          event.preventDefault();
-        } else {
+        event.preventDefault();
+        if (isValid) {
           that.restoreDefaultValues(that.defaultValues);
-          event.preventDefault();
+          // submit data...
         }
       });
       return this;
@@ -117,7 +116,7 @@ window.form = (function () {
     this.isValid = function () {
       var value = getValue(this.getValidatedControl());
       for (var i = 0; i < this.checkers.length; i++) {
-        if (this.checkers[i](value) === false) {
+        if (!this.checkers[i](value)) {
           return false;
         }
       }
