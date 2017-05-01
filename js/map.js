@@ -44,13 +44,25 @@ window.map = (function () {
     }
     var mapElement = document.querySelector('.tokyo__pin-map');
     var fragment = document.createDocumentFragment();
-    ads.map(generatePin).map(function (pin) {
-      fragment.appendChild(pin);
-    });
+    var randomIndexes = [];
+    var currentNumber;
+    while (randomIndexes.length < 3) {
+      currentNumber = window.data.generateRandomInt(0, ads.length - 1);
+      if (randomIndexes.indexOf(currentNumber) === -1) {
+        randomIndexes.push(currentNumber);
+      }
+    }
+    var pinsToShow = window.pin.hidePins(ads
+      .map(generatePin).map(function (pin) {
+        fragment.appendChild(pin);
+        return pin;
+      }))
+      .filter(function (pin, index) {
+        return randomIndexes.indexOf(index) > -1;
+      });
+    window.pin.showPins(pinsToShow);
     mapElement.appendChild(fragment);
   }
-
-  fillMap(window.data.ad);
 
   window.ajax.load('https://intensive-javascript-server-kjgvxfepjl.now.sh/keksobooking/data', fillMap);
 

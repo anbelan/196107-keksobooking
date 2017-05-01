@@ -74,11 +74,13 @@ window.pin = (function () {
     for (var i = 0; i < pins.length; i++) {
       pins[i].style.display = 'none';
     }
+    return pins;
   }
   function showPins(pins) {
     for (var i = 0; i < pins.length; i++) {
       pins[i].style.display = 'block';
     }
+    return pins;
   }
 
   function updateFilterObject() {
@@ -190,6 +192,8 @@ window.pin = (function () {
 
   return {
     'makePinActive': makePinActive,
+    'hidePins': hidePins,
+    'showPins': showPins,
     'deactivatePins': deactivatePins
   };
 

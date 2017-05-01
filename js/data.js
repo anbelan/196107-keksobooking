@@ -78,6 +78,7 @@ window.data = (function () {
   }
 
   return {
+    'generateRandomInt': generateRandomInt,
     'substituteTemplate': substituteTemplate,
     'ad': ad
   };
